@@ -8,29 +8,33 @@ viewer) and deck/thumb-NN.webp (the rail and grid). Requires PyMuPDF.
 
 READ THIS BEFORE SHIPPING A NEW DECK VERSION
 --------------------------------------------
-Every published asset here is *derived*, not a copy. Three passes run over the
+Every published asset here is *derived*, not a copy. Several passes run over the
 source PDF before anything is rendered, so the download and the slides agree:
 
   FORBIDDEN   Client brand names that must never reach a public asset. Checked
               on every build; a hit stops it. This is the backstop and it is
-              always on, even when the other two tables are empty.
+              always on, even when every other table is empty.
   REDACTIONS  Names to rewrite rather than merely refuse.
   CORRECTIONS Facts that are wrong in the deck itself and would mislead a reader.
+  DELETIONS   Sentences pointing at something the deck no longer contains.
+  LISTS       Lists that outlived some of their entries.
 
-Both tables are empty as of deck v2, which cut the slide carrying the client
-name and fixed the contact address at source. The machinery stays because the
-next export can reintroduce either.
+REDACTIONS and CORRECTIONS are empty as of deck v2, which cut the slide carrying
+the client name and fixed the contact address at source. The machinery stays
+because the next export can reintroduce either. DELETIONS and LISTS are in use:
+v2 cut appendices A4 and A7 without updating the appendix contents slide or the
+line on slide 10 that pointed at A4.
 
 None of this shows in a diff: the repo holds only binaries. Drop a fresh export
 in by hand and whatever the passes were catching goes straight back up on a
 public URL with nothing to stop it. So always regenerate through this script,
 and extend the tables when a new version needs it.
 
-Every pass fails loudly rather than publish. A REDACTIONS or CORRECTIONS entry
-that matches nothing is an error — the wording moved, or the slide was cut, and
-either way somebody should look — and so is one that survives its own pass.
-Everything is checked before a single byte is written, so a failed run leaves
-the shipped assets alone.
+Every pass fails loudly rather than publish. An entry that matches nothing is an
+error — the wording moved, or the slide was cut, and either way somebody should
+look at it — and so is one that survives its own pass. Everything is checked
+before a single byte is written, so a failed run leaves the shipped assets
+alone.
 
 Eyeball the rendered slide afterwards regardless. A redaction is redrawn in
 Helvetica at the source size — close to the deck's Arial, not identical — and a
@@ -68,6 +72,32 @@ REDACTIONS = {
 CORRECTIONS = [
     # v1 slide 13 read ELOR.KAHALANY@NODEAI.COM, a domain we do not hold:
     # {"find": "ELOR.KAHALANY@NODEAI.COM", "replace": "ELOR@JOINNODE.AI", "why": ...},
+]
+
+# Sentences left pointing at something the deck no longer contains. Cleared, not
+# rewritten — a dead pointer should go away, not be replaced with a new claim.
+DELETIONS = [
+    {
+        "find": "Early capture rates are in the appendix.",
+        "why": "those were the 8-30% / 40-66% figures on A4, and A4 was cut in v2",
+    },
+]
+
+# Lists that outlived some of their entries. Give the whole list as it stands and
+# as it should read; the surviving items are re-placed into the leading slots so
+# no hole is left where a cut one was.
+LISTS = [
+    {
+        "page": 14,
+        "was": ["A1 · COMPETITIVE DETAIL", "A2 · UNIT ECONOMICS ASSUMPTIONS",
+                "A3 · HOST ECONOMICS", "A4 · ADOPTION DETAIL",
+                "A5 · EXPANSION MODEL", "A6 · FUTURE OPTIONALITY",
+                "A7 · METRO MATH"],
+        "now": ["A1 · COMPETITIVE DETAIL", "A2 · UNIT ECONOMICS ASSUMPTIONS",
+                "A3 · HOST ECONOMICS", "A5 · EXPANSION MODEL",
+                "A6 · FUTURE OPTIONALITY"],
+        "why": "the appendix contents still promised A4 and A7 after v2 cut them",
+    },
 ]
 
 # Sampled off the appendix page background and the body ink, so the patch is
@@ -245,6 +275,126 @@ def pitch(chars):
     return max(set(gaps), key=gaps.count)
 
 
+def find_span(page, text):
+    """The span whose whole text is `text`, ignoring baked-in letter spacing."""
+    want = text.replace(" ", "")
+    for block in page.get_text("rawdict")["blocks"]:
+        for line in block.get("lines", []):
+            for span in line["spans"]:
+                if "".join(c["c"] for c in span["chars"]).replace(" ", "") == want:
+                    return span
+    return None
+
+
+def rule_above(page, span):
+    """The hairline divider drawn over this list item, if the slide rules them."""
+    x0, top = span["bbox"][0], span["bbox"][1]
+    best = None
+    for drawing in page.get_drawings():
+        r = drawing["rect"]
+        if r.height < 3 and r.x0 <= x0 and r.x1 > x0 and 0 < top - r.y1 < 30:
+            if best is None or r.y1 > best.y1:
+                best = r
+    return best
+
+
+def delete(doc):
+    """Clear dead sentences. Nothing is drawn back."""
+    changed = []
+    for cut in DELETIONS:
+        find = cut["find"]
+        hits = 0
+        for page in doc:
+            for block in page.get_text("rawdict")["blocks"]:
+                for line in block.get("lines", []):
+                    for span in line["spans"]:
+                        chars = glyphs(span)
+                        at = "".join(c["c"] for c in chars).replace(" ", "").find(
+                            find.replace(" ", ""))
+                        if at < 0:
+                            continue
+                        hits += 1
+                        # `at` indexes the space-stripped string; walk the glyphs
+                        # to the same point so the x is the one actually drawn.
+                        run = chars[at:at + len(find.replace(" ", ""))]
+                        _, y0, _, y1 = span["bbox"]
+                        page.add_redact_annot(
+                            fitz.Rect(run[0]["origin"][0] - 2, y0 - 2,
+                                      run[-1]["bbox"][2] + 2, y1 + 2),
+                            fill=page_bg(page, run[0]["origin"][0], y0, y1))
+                        page.apply_redactions()
+                        changed.append("p%d  %s  (%s)"
+                                       % (page.number + 1, find, cut["why"]))
+        if not hits:
+            raise SystemExit(
+                "%r matched nothing. Either the deck already dropped it — remove "
+                "the entry — or the wording moved and nothing was cut." % find)
+    return changed
+
+
+def reflow(doc):
+    """Re-place a list's survivors into its leading slots."""
+    changed = []
+    for job in LISTS:
+        page = doc[job["page"] - 1]
+        spans = []
+        for text in job["was"]:
+            span = find_span(page, text)
+            if span is None:
+                raise SystemExit(
+                    "%r is not on page %d. Give LISTS the whole list exactly as "
+                    "the deck now has it — if the slide already dropped it, drop "
+                    "it here too." % (text, job["page"]))
+            spans.append(span)
+
+        missing = [t for t in job["now"] if t not in job["was"]]
+        if missing:
+            raise SystemExit("LISTS 'now' may only keep items from 'was': %s" % missing)
+
+        # Slots in reading order, and one pitch for the lot — they are all the
+        # same tracked monospace, so an item keeps its width wherever it lands.
+        slots = sorted((round(s["bbox"][1], 1), s["chars"][0]["origin"][0], s)
+                       for s in spans)
+        steps = [pitch(glyphs(s)) for s in spans]
+        step = max(set(steps), key=steps.count)
+        columns = sorted({x for _, x, _ in slots})
+
+        for text, (_, x, span) in zip(job["now"], slots):
+            right = next((c for c in columns if c > x), page.rect.width - 60)
+            end = x + (len(text) - 1) * step + span["size"] * 0.6
+            if end > right:
+                raise SystemExit(
+                    "%r would run %.0fpt into the next column on page %d"
+                    % (text, end - right, job["page"]))
+
+        # Slots that keep an item are cleared down to the text only, so the rule
+        # ruled above them survives. Slots that fall empty take their rule with
+        # them — a divider with nothing under it is worse than the stale entry.
+        for i, (_, _, span) in enumerate(slots):
+            x0, y0, x1, y1 = span["bbox"]
+            box = fitz.Rect(x0 - 2, y0 - 2, x1 + 2, y1 + 2)
+            if i >= len(job["now"]):
+                divider = rule_above(page, span)
+                if divider is not None:
+                    box |= fitz.Rect(divider.x0 - 1, divider.y0 - 1,
+                                     divider.x1 + 1, divider.y1 + 1)
+            page.add_redact_annot(box, fill=page_bg(page, x0, y0, y1))
+        page.apply_redactions()
+
+        for text, (_, x, span) in zip(job["now"], slots):
+            base = span["chars"][0]["origin"][1]
+            colour = rgb(span["color"])
+            for i, ch in enumerate(text):
+                if ch != " ":
+                    page.insert_text((x + i * step, base), ch, fontname="cobo",
+                                     fontsize=span["size"], color=colour)
+
+        dropped = [t for t in job["was"] if t not in job["now"]]
+        changed.append("p%d  dropped %s  (%s)"
+                       % (job["page"], ", ".join(dropped), job["why"]))
+    return changed
+
+
 def rgb(packed):
     return ((packed >> 16 & 255) / 255, (packed >> 8 & 255) / 255, (packed & 255) / 255)
 
@@ -290,6 +440,10 @@ def main():
         print("redacted   " + line)
     for line in correct(doc):
         print("corrected  " + line)
+    for line in delete(doc):
+        print("deleted    " + line)
+    for line in reflow(doc):
+        print("reflowed   " + line)
 
     os.makedirs(OUT, exist_ok=True)
     doc.save(os.path.join(OUT, "NodeAI-Seed-Deck.pdf"), garbage=4, deflate=True)
