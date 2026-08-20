@@ -276,7 +276,7 @@
         <span class="kicker">Seed 2026 · NYC + North Jersey</span>
         <h1>Investor deck</h1>
         <p class="sub">Same-day delivery at the price of ground, fulfilled out of businesses that are
-          already open and already staffed. Twenty-one slides, including the appendix behind the numbers.</p>
+          already open and already staffed. Nineteen slides, including the appendix behind the numbers.</p>
       </div>
       <div class="deck-actions">
         <a class="btn btn-primary" href="/deck/NodeAI-Seed-Deck.pdf" download>
@@ -356,7 +356,7 @@
 <!-- ============ GRID OVERLAY ============ -->
 <div class="grid-ov" id="gridov" role="dialog" aria-modal="true" aria-label="All slides">
   <div class="grid-top">
-    <h4>All slides · 21</h4>
+    <h4 id="gridcount">All slides</h4>
     <button class="tool" id="gridclose" aria-label="Close">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
@@ -445,12 +445,11 @@
     ["A1 · Competitive",       "Darkstore, Ohi and Gently."],
     ["A2 · Unit economics",    "Assumptions behind the margin bars."],
     ["A3 · Host economics",    "What a host is paid."],
-    ["A4 · Adoption",          "Early adoption signal."],
     ["A5 · Expansion",         "The full ladder."],
-    ["A6 · Optionality",       "In-store sale: a retail shelf the brand never had to open."],
-    ["A7 · Metro math",        "How the metro number is built."]
+    ["A6 · Optionality",       "In-store sale: a retail shelf the brand never had to open."]
   ];
   var N = SLIDES.length;
+  document.getElementById("gridcount").textContent = "All slides · " + N;
 
   var pad     = function(n){ return (n < 10 ? "0" : "") + n; };
   var slideSrc= function(n){ return "/deck/slide-" + pad(n) + ".webp"; };

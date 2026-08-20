@@ -8,23 +8,29 @@ viewer) and deck/thumb-NN.webp (the rail and grid). Requires PyMuPDF.
 
 READ THIS BEFORE SHIPPING A NEW DECK VERSION
 --------------------------------------------
-Every published asset here is *derived*, not a copy. Two passes run over the
+Every published asset here is *derived*, not a copy. Three passes run over the
 source PDF before anything is rendered, so the download and the slides agree:
 
-  REDACTIONS  Client brand names must never appear on a public asset, and the
-              deck names one in the metro-math appendix.
-  CORRECTIONS Facts that are wrong in the deck itself and would mislead a
-              reader — currently a contact address on a domain we do not hold.
+  FORBIDDEN   Client brand names that must never reach a public asset. Checked
+              on every build; a hit stops it. This is the backstop and it is
+              always on, even when the other two tables are empty.
+  REDACTIONS  Names to rewrite rather than merely refuse.
+  CORRECTIONS Facts that are wrong in the deck itself and would mislead a reader.
 
-Both are invisible in a diff: the repo holds only binaries. Re-export the deck,
-drop the new PDF in by hand, and the old name and the dead address go straight
-back up on a public URL with nothing to catch it. So: always regenerate through
-this script, and extend the two tables when a new version needs it.
+Both tables are empty as of deck v2, which cut the slide carrying the client
+name and fixed the contact address at source. The machinery stays because the
+next export can reintroduce either.
 
-Both passes fail loudly rather than publish. An entry matching nothing is an
-error (the wording changed, or the slide was cut), and so is one that survives
-the pass. Everything is checked before a single byte is written, so a failed run
-leaves the shipped assets alone.
+None of this shows in a diff: the repo holds only binaries. Drop a fresh export
+in by hand and whatever the passes were catching goes straight back up on a
+public URL with nothing to stop it. So always regenerate through this script,
+and extend the tables when a new version needs it.
+
+Every pass fails loudly rather than publish. A REDACTIONS or CORRECTIONS entry
+that matches nothing is an error — the wording moved, or the slide was cut, and
+either way somebody should look — and so is one that survives its own pass.
+Everything is checked before a single byte is written, so a failed run leaves
+the shipped assets alone.
 
 Eyeball the rendered slide afterwards regardless. A redaction is redrawn in
 Helvetica at the source size — close to the deck's Arial, not identical — and a
@@ -41,22 +47,27 @@ import fitz  # PyMuPDF
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(HERE, "deck")
 
-# Confidential client names, and what the public asset says instead. Keep the
-# replacement close to the original's width — see the module docstring.
+# The client brands whose private order books feed the demand model. None of
+# them may appear on a public asset, ever. This list is checked on every build
+# and a hit STOPS it — it is the backstop, not the fixer. If one shows up,
+# either get a clean export or add a REDACTIONS entry and eyeball the result.
+FORBIDDEN = ["Laundry Sauce", "Relaxium", "Hairmax", "Caddis"]
+
+# Confidential names to replace rather than merely refuse, and what the public
+# asset says instead. Keep the replacement close to the original's width — see
+# the module docstring. Empty since v2 of the deck: the only name was in the
+# metro-math appendix, and that slide was cut.
 REDACTIONS = {
-    "Laundry Sauce": "Subscription CPG brand",
+    # "Laundry Sauce": "Subscription CPG brand",   # v1, slide A7
 }
 
 # Wrong in the source deck and misleading to a reader. Unlike a redaction these
 # are the deck's own claims, so keep the list short and factual, and tell Elor
-# what was changed rather than quietly fixing his slides.
+# what was changed rather than quietly fixing his slides. Empty since v2, which
+# corrected the contact address at source.
 CORRECTIONS = [
-    {
-        "find": "ELOR.KAHALANY@NODEAI.COM",
-        "replace": "ELOR@JOINNODE.AI",
-        "why": "nodeai.com is not a domain we hold — mail to it is lost, and this "
-               "is the contact line on the raise slide",
-    },
+    # v1 slide 13 read ELOR.KAHALANY@NODEAI.COM, a domain we do not hold:
+    # {"find": "ELOR.KAHALANY@NODEAI.COM", "replace": "ELOR@JOINNODE.AI", "why": ...},
 ]
 
 # Sampled off the appendix page background and the body ink, so the patch is
@@ -114,6 +125,32 @@ def redact(doc):
                 raise SystemExit("%r survived the redaction on page %d"
                                  % (name, page.number + 1))
     return changed
+
+
+def forbid(doc):
+    """Refuse to build if a client brand name is anywhere in the deck.
+
+    Matches against the de-spaced text, because the deck's exports bake letter
+    tracking in as real space characters — v2 writes even its section labels as
+    'T H E  P R O B L E M'. A plain search would sail straight past a name set
+    that way, which is exactly the failure this list exists to prevent.
+    """
+    for page in doc:
+        flat = "".join(despace(page))
+        for name in FORBIDDEN:
+            if name.replace(" ", "") in flat.replace(" ", ""):
+                raise SystemExit(
+                    "%r is on page %d. Client brand names never go on a public "
+                    "asset. Get an export without it, or add it to REDACTIONS "
+                    "with a generic replacement and check the rendered slide."
+                    % (name, page.number + 1))
+
+
+def despace(page):
+    """Every non-space glyph on the page, in reading order."""
+    return [c["c"] for b in page.get_text("rawdict")["blocks"]
+            for l in b.get("lines", []) for s in l["spans"]
+            for c in s["chars"] if not c["c"].isspace()]
 
 
 def glyphs(span):
@@ -248,6 +285,7 @@ def main():
     src = sys.argv[1]
 
     doc = fitz.open(src)
+    forbid(doc)
     for line in redact(doc):
         print("redacted   " + line)
     for line in correct(doc):
