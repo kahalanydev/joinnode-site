@@ -8,22 +8,29 @@ viewer) and deck/thumb-NN.webp (the rail and grid). Requires PyMuPDF.
 
 READ THIS BEFORE SHIPPING A NEW DECK VERSION
 --------------------------------------------
-Client brand names must never appear on a public asset, and the deck names one
-in the metro-math appendix. Every published asset here is therefore *derived*,
-not a copy — the name is redacted out of the PDF before anything is rendered,
-so the download and the slides agree.
+Every published asset here is *derived*, not a copy. Two passes run over the
+source PDF before anything is rendered, so the download and the slides agree:
 
-That redaction is invisible in a diff: the repo only holds binaries. Re-export
-the deck, drop the new PDF in by hand, and the name goes back up on a public
-URL with nothing to catch it. So: always regenerate through this script, and
-extend REDACTIONS if a later version names a different client.
+  REDACTIONS  Client brand names must never appear on a public asset, and the
+              deck names one in the metro-math appendix.
+  CORRECTIONS Facts that are wrong in the deck itself and would mislead a
+              reader — currently a contact address on a domain we do not hold.
 
-It fails loudly rather than publishing a name — an entry that matches nothing is
-an error (the wording changed, or the slide was cut), and so is a name that
-survives the pass. Check the rendered slide afterwards regardless: replacement
-text is drawn in Helvetica at the source size, which is close to the deck's
-Arial but not identical, and a much longer name could collide with the next
-column.
+Both are invisible in a diff: the repo holds only binaries. Re-export the deck,
+drop the new PDF in by hand, and the old name and the dead address go straight
+back up on a public URL with nothing to catch it. So: always regenerate through
+this script, and extend the two tables when a new version needs it.
+
+Both passes fail loudly rather than publish. An entry matching nothing is an
+error (the wording changed, or the slide was cut), and so is one that survives
+the pass. Everything is checked before a single byte is written, so a failed run
+leaves the shipped assets alone.
+
+Eyeball the rendered slide afterwards regardless. A redaction is redrawn in
+Helvetica at the source size — close to the deck's Arial, not identical — and a
+much longer replacement could collide with the next column. A correction is set
+on the line's own letter pitch, so its tracking matches, but it has to fit
+inside the footprint of the string it replaces.
 """
 
 import os
@@ -39,6 +46,18 @@ OUT = os.path.join(HERE, "deck")
 REDACTIONS = {
     "Laundry Sauce": "Subscription CPG brand",
 }
+
+# Wrong in the source deck and misleading to a reader. Unlike a redaction these
+# are the deck's own claims, so keep the list short and factual, and tell Elor
+# what was changed rather than quietly fixing his slides.
+CORRECTIONS = [
+    {
+        "find": "ELOR.KAHALANY@NODEAI.COM",
+        "replace": "ELOR@JOINNODE.AI",
+        "why": "nodeai.com is not a domain we hold — mail to it is lost, and this "
+               "is the contact line on the raise slide",
+    },
+]
 
 # Sampled off the appendix page background and the body ink, so the patch is
 # invisible. Both pages that could carry a client name share this treatment.
@@ -97,6 +116,108 @@ def redact(doc):
     return changed
 
 
+def glyphs(span):
+    """The span's characters with the spaces the tracking baked in stripped out.
+
+    The deck sets these labels in letter-spaced Courier, and the export writes
+    that as literal spaces between glyphs at hand-placed positions — so the span
+    reads 'EL O R . K A HA L A N Y@ N OD E A I . C OM' and no plain search finds
+    the address. Dropping the spaces gives back the real string, and each
+    surviving glyph keeps the x it was drawn at.
+    """
+    return [c for c in span["chars"] if not c["c"].isspace()]
+
+
+def correct(doc):
+    """Fix wrong facts in place, reusing the deck's own glyph grid."""
+    changed = []
+    for fix in CORRECTIONS:
+        find, replacement = fix["find"], fix["replace"]
+        hits = 0
+        for page in doc:
+            for block in page.get_text("rawdict")["blocks"]:
+                for line in block.get("lines", []):
+                    for span in line["spans"]:
+                        chars = glyphs(span)
+                        at = "".join(c["c"] for c in chars).find(find)
+                        if at < 0:
+                            continue
+                        hits += 1
+                        run = chars[at:at + len(find)]
+                        x0, y0, _, y1 = span["bbox"]
+                        left, base = run[0]["origin"]
+                        step = pitch(chars)
+
+                        # Only the old string's footprint gets cleared, so the
+                        # new one has to live inside it — past that edge it would
+                        # overprint whatever sits further along the line.
+                        end = left + (len(replacement) - 1) * step + span["size"] * 0.6
+                        if end > span["bbox"][2]:
+                            raise SystemExit(
+                                "%r runs %.0fpt past the end of the line it replaces "
+                                "on page %d — shorten it, or widen the cleared area "
+                                "after checking what else is on that row."
+                                % (replacement, end - span["bbox"][2], page.number + 1))
+
+                        # Clear from the first glyph of the old string to the end
+                        # of the span, then set the replacement on the line's own
+                        # pitch. Reusing the old glyphs' exact x values instead
+                        # would inherit that string's kerning quirks, and the new
+                        # address came out visibly tighter than the label next to
+                        # it — the run is monospaced, so an even step is right.
+                        page.add_redact_annot(
+                            fitz.Rect(left - 1, y0 - 2, span["bbox"][2] + 2, y1 + 2),
+                            fill=page_bg(page, x0, y0, y1))
+                        page.apply_redactions()
+
+                        colour = rgb(span["color"])
+                        for i, ch in enumerate(replacement):
+                            page.insert_text((left + i * step, base), ch,
+                                             fontname="cour", fontsize=span["size"],
+                                             color=colour)
+                        changed.append("p%d  %s -> %s  (%s)"
+                                       % (page.number + 1, find, replacement, fix["why"]))
+        if not hits:
+            raise SystemExit(
+                "%r matched nothing. Either the deck already says the right thing "
+                "— drop the entry — or the text moved and the fix silently did not "
+                "run." % find)
+
+    for page in doc:
+        for fix in CORRECTIONS:
+            for block in page.get_text("rawdict")["blocks"]:
+                for line in block.get("lines", []):
+                    for span in line["spans"]:
+                        if fix["find"] in "".join(c["c"] for c in glyphs(span)):
+                            raise SystemExit("%r survived on page %d"
+                                             % (fix["find"], page.number + 1))
+    return changed
+
+
+def pitch(chars):
+    """The span's letter-to-letter step, as the most common gap between glyphs.
+
+    These labels are monospaced with tracking, so nearly every in-word gap is
+    the same number and the mode finds it. Gaps at word boundaries are wider but
+    far rarer, and the odd kerned pair rarer still, so neither wins the vote.
+    """
+    gaps = [round(b["origin"][0] - a["origin"][0], 3)
+            for a, b in zip(chars, chars[1:]) if b["origin"][0] > a["origin"][0]]
+    if not gaps:
+        raise SystemExit("cannot read a letter pitch from this span")
+    return max(set(gaps), key=gaps.count)
+
+
+def rgb(packed):
+    return ((packed >> 16 & 255) / 255, (packed >> 8 & 255) / 255, (packed & 255) / 255)
+
+
+def page_bg(page, x, y0, y1):
+    """The page colour just left of x on that row, so a patch cannot show."""
+    pix = page.get_pixmap(dpi=72, clip=fitz.Rect(max(0, x - 8), y0, max(1, x - 2), y1))
+    return tuple(v / 255 for v in pix.pixel(0, pix.height // 2))
+
+
 def span_at(page, rect):
     """The text span whose bbox matches rect — for its font size and baseline."""
     for block in page.get_text("dict")["blocks"]:
@@ -128,7 +249,9 @@ def main():
 
     doc = fitz.open(src)
     for line in redact(doc):
-        print("redacted  " + line)
+        print("redacted   " + line)
+    for line in correct(doc):
+        print("corrected  " + line)
 
     os.makedirs(OUT, exist_ok=True)
     doc.save(os.path.join(OUT, "NodeAI-Seed-Deck.pdf"), garbage=4, deflate=True)
