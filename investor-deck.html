@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Investor deck — Node AI</title>
+<meta name="description" content="Node AI seed deck. Same-day delivery at the price of ground, out of businesses that are already open." />
+<!-- Shared by link with investors, not published to search. -->
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#0C1421" />
+<link rel="canonical" href="https://www.joinnode.ai/investor-deck" />
+<link rel="icon" href="/favicon.ico" sizes="32x32" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Node AI — Seed deck" />
+<meta property="og:description" content="Same-day delivery at the price of ground. No warehouses." />
+<meta property="og:url" content="https://www.joinnode.ai/investor-deck" />
+<meta property="og:image" content="https://www.joinnode.ai/deck/slide-01.webp" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="preload" as="image" href="/deck/slide-01.webp" />
+<style>
+  /* ==========================================================
+     NODE AI — investor deck viewer
+     Same tokens as the rest of the site; the stage runs dark so
+     the slides (which carry their own light/dark art) sit on a
+     neutral surround instead of fighting the page background.
+     ========================================================== */
+  :root{
+    --bg:#F7F9FC; --bg-2:#EDF2F9; --bg-3:#FFFFFF;
+    --panel:#FFFFFF; --panel-2:#F7FAFD; --panel-3:#EDF2F9;
+    --line:rgba(20,40,74,.12); --line-2:rgba(20,40,74,.20);
+    --ink:#16294A; --ink-2:#3A4A63; --muted:#5E6C82; --faint:#94A1B4;
+    --accent:#0FA06A; --accent-2:#18B87A; --accent-deep:#0B7F53;
+    --accent-soft:rgba(15,160,106,.13);
+    --green:#0FA06A; --sky:#4AA8FF; --sky-ink:#2C7BE0; --navy:#0F2747; --radius:14px;
+    --stage:#0C1421; --stage-2:#131C2C; --stage-line:rgba(255,255,255,.13);
+    --serif:'Newsreader',Georgia,serif;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+    --maxw:1200px; --pad:clamp(1.15rem,4vw,2.5rem);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink-2);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
+  ::selection{background:rgba(15,160,106,.18);color:#083b28}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+  h1,h2,h3,h4{color:var(--ink);letter-spacing:-.02em;line-height:1.12}
+  .kicker{font-family:var(--sans);font-weight:600;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:.6rem}
+  .kicker::before{content:"";width:22px;height:1px;background:currentColor;opacity:.7}
+
+  /* ---- buttons ---- */
+  .btn{font-weight:600;font-size:.9rem;padding:.72rem 1.3rem;border-radius:9px;cursor:pointer;border:1px solid transparent;display:inline-flex;align-items:center;gap:.5rem;transition:.18s;white-space:nowrap;font-family:inherit}
+  .btn svg{width:16px;height:16px;flex:none}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent-2);transform:translateY(-1px)}
+  .btn-ghost{border-color:var(--line-2);color:var(--ink);background:none}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---- nav (matches index/brands/nodes) ---- */
+  header.nav{position:sticky;top:0;z-index:60;background:rgba(247,249,252,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px;gap:1rem}
+  .logo-img{height:24px;width:auto}
+  .navlinks{display:flex;align-items:center;gap:1.9rem;margin-left:auto;margin-right:1.6rem}
+  .navlinks a{font-size:.88rem;color:var(--muted);font-weight:500;transition:.18s}
+  .navlinks a:hover{color:var(--ink)}
+  .navtoggle{display:none;background:none;border:0;color:var(--ink);cursor:pointer;padding:.4rem}
+  .navtoggle svg{width:24px;height:24px}
+  .mobile-menu{display:none;flex-direction:column;padding:.4rem var(--pad) 1.4rem;border-bottom:1px solid var(--line);background:var(--bg)}
+  .mobile-menu a{padding:.85rem 0;color:var(--ink-2);border-bottom:1px solid var(--line)}
+  .mobile-menu .btn{margin-top:1rem;justify-content:center}
+
+  /* ---- deck header ---- */
+  .deck-head{padding-block:clamp(2.2rem,5vw,3.4rem) clamp(1.6rem,3vw,2.2rem)}
+  .deck-head .row{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+  .deck-head h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,4.4vw,3.1rem);letter-spacing:-.025em;margin-top:1rem}
+  .deck-head p.sub{font-size:clamp(.98rem,1.4vw,1.1rem);color:var(--muted);max-width:56ch;margin-top:.9rem}
+  .deck-actions{display:flex;gap:.7rem;flex-wrap:wrap}
+  .confid{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.5rem;font-size:.78rem;color:var(--faint);border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:.42rem .9rem}
+  .confid svg{width:14px;height:14px;color:var(--faint);flex:none}
+
+  /* ============ STAGE ============ */
+  .stage-band{background:var(--stage);border-block:1px solid rgba(20,40,74,.18);padding-block:clamp(1.4rem,3vw,2.2rem);position:relative}
+  .stage-band::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(70% 60% at 50% 0%,rgba(15,160,106,.10),transparent 62%)}
+  .stage-in{position:relative;z-index:1}
+
+  .stage{position:relative;aspect-ratio:16/9;background:var(--stage-2);border:1px solid var(--stage-line);border-radius:12px;overflow:hidden;box-shadow:0 24px 60px -22px rgba(0,0,0,.7);cursor:zoom-in}
+  .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .22s ease}
+  .stage img.on{opacity:1}
+  .stage .spinner{position:absolute;inset:0;display:grid;place-items:center}
+  .stage .spinner i{width:26px;height:26px;border:2px solid rgba(255,255,255,.18);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;display:block}
+  .stage.ready .spinner{display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:44px;height:44px;border-radius:50%;
+    background:rgba(12,20,33,.62);border:1px solid rgba(255,255,255,.18);color:#fff;cursor:pointer;
+    display:grid;place-items:center;transition:.18s;backdrop-filter:blur(8px)}
+  .arrow:hover{background:var(--accent);border-color:var(--accent)}
+  .arrow[disabled]{opacity:.28;cursor:default}
+  .arrow[disabled]:hover{background:rgba(12,20,33,.62);border-color:rgba(255,255,255,.18)}
+  .arrow svg{width:20px;height:20px}
+  .arrow.prev{left:.85rem}
+  .arrow.next{right:.85rem}
+
+  /* progress hairline across the top of the stage */
+  .prog{position:absolute;top:0;left:0;height:2px;background:var(--accent);z-index:5;transition:width .25s ease;border-radius:0 2px 2px 0}
+
+  /* ---- stage toolbar ---- */
+  .bar{display:flex;align-items:center;gap:1rem;margin-top:.95rem;color:rgba(255,255,255,.72);font-size:.85rem}
+  .bar .count{font-variant-numeric:tabular-nums;font-weight:600;color:#fff;letter-spacing:.04em;flex:none}
+  .bar .count em{font-style:normal;color:rgba(255,255,255,.4);font-weight:500}
+  .bar .title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar .title b{color:#fff;font-weight:600}
+  .bar .title span{color:var(--accent-2);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-right:.6rem}
+  .tools{display:flex;gap:.4rem;flex:none}
+  .tool{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.07);border:1px solid var(--stage-line);color:rgba(255,255,255,.8);
+    cursor:pointer;display:grid;place-items:center;transition:.16s}
+  .tool:hover,.tool.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tool svg{width:16px;height:16px}
+
+  /* ---- thumbnail rail ---- */
+  .rail{display:flex;gap:.55rem;margin-top:1rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
+  .rail::-webkit-scrollbar{height:6px}
+  .rail::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:99px}
+  .rail button{flex:none;width:112px;aspect-ratio:16/9;padding:0;border-radius:6px;overflow:hidden;cursor:pointer;
+    border:1px solid var(--stage-line);background:var(--stage-2);opacity:.5;transition:.16s;position:relative}
+  .rail button:hover{opacity:.85}
+  .rail button.on{opacity:1;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .rail button img{width:100%;height:100%;object-fit:cover}
+  .rail button i{position:absolute;left:3px;bottom:2px;font-style:normal;font-size:.58rem;font-weight:700;color:#fff;
+    background:rgba(12,20,33,.7);border-radius:3px;padding:0 .28rem;letter-spacing:.04em}
+
+  .hint{margin-top:.9rem;font-size:.76rem;color:rgba(255,255,255,.34);display:flex;gap:1.1rem;flex-wrap:wrap}
+  .hint kbd{font-family:inherit;font-size:.72rem;background:rgba(255,255,255,.09);border:1px solid var(--stage-line);
+    border-radius:4px;padding:.05rem .34rem;color:rgba(255,255,255,.62);margin-right:.28rem}
+
+  /* ---- lightbox ----
+     iOS Safari has no Fullscreen API for elements, and a 16:9 slide inside a
+     portrait phone is ~200px tall — unreadable for the appendix. So the
+     fullscreen control falls back to this, and in portrait the slide is turned
+     90° to use the long edge of the screen. Physically rotating the phone trips
+     the media query and it lands upright again. */
+  .lb{position:fixed;inset:0;z-index:300;background:#080D16;display:none;place-items:center;overscroll-behavior:contain}
+  .lb.on{display:grid}
+  .lb-stage{position:relative;line-height:0}
+  .lb-stage img{max-width:96vw;max-height:92vh;width:auto;height:auto}
+  .lb .arrow{background:rgba(12,20,33,.55)}
+  .lb .arrow.prev{left:.6rem}
+  .lb .arrow.next{right:.6rem}
+  .lb-x{position:fixed;top:.9rem;right:.9rem;z-index:2;width:38px;height:38px;border-radius:9px;
+    background:rgba(255,255,255,.09);border:1px solid var(--stage-line);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-x:hover{background:var(--accent);border-color:var(--accent)}
+  .lb-x svg{width:18px;height:18px}
+  .lb-cap{position:fixed;left:0;right:0;bottom:.7rem;text-align:center;font-size:.74rem;
+    color:rgba(255,255,255,.42);font-variant-numeric:tabular-nums;pointer-events:none}
+  .lb-turn{display:none}
+  @media (orientation:portrait) and (max-width:820px){
+    /* Positioned rather than grid-centred: the unrotated box is wider than the
+       viewport, and a grid track that overflows starts at the edge instead of
+       centring, which throws the turned slide off to one side. */
+    .lb-stage{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(90deg)}
+    .lb-stage img{width:min(94vh,calc(94vw * 16 / 9));max-width:none;max-height:none}
+    .lb-turn{display:inline}
+  }
+
+  /* ---- grid overlay ---- */
+  .grid-ov{position:fixed;inset:0;z-index:200;background:#080D16;
+    overflow-y:auto;padding:clamp(1rem,3vw,2rem);display:none}
+  .grid-ov.on{display:block}
+  .grid-top{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.4rem;
+    color:#fff;max-width:1400px;margin-inline:auto}
+  .grid-top h4{color:#fff;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+  .grid-cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.9rem;max-width:1400px;margin-inline:auto}
+  .grid-cells button{padding:0;border:1px solid var(--stage-line);background:var(--stage-2);border-radius:8px;overflow:hidden;
+    cursor:pointer;transition:.16s;text-align:left}
+  .grid-cells button:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .grid-cells button.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .grid-cells img{width:100%;aspect-ratio:16/9;object-fit:cover}
+  .grid-cells .cap{padding:.5rem .6rem .6rem;font-size:.72rem;color:rgba(255,255,255,.62);line-height:1.35}
+  .grid-cells .cap b{display:block;color:#fff;font-weight:600;font-size:.76rem;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .grid-cells .cap i{font-style:normal;color:var(--accent-2);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+
+  /* ---- contents ---- */
+  .contents{padding-block:clamp(3rem,6vw,4.5rem)}
+  .contents h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,3vw,2.2rem);margin-top:.9rem}
+  .toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.35rem 2rem;margin-top:2rem}
+  .toc a{display:flex;gap:.85rem;align-items:baseline;padding:.62rem .5rem;border-radius:8px;transition:.15s;border-bottom:1px solid var(--line)}
+  .toc a:hover{background:var(--panel);border-bottom-color:transparent;box-shadow:0 2px 10px -4px rgba(20,40,74,.18)}
+  .toc a:hover .t{color:var(--accent)}
+  .toc .n{font-size:.7rem;font-weight:700;letter-spacing:.08em;color:var(--faint);font-variant-numeric:tabular-nums;flex:none;width:1.7rem}
+  .toc .t{font-size:.9rem;color:var(--ink-2);font-weight:500;transition:.15s}
+
+  /* ---- cta band ---- */
+  .cta{background:var(--navy);color:rgba(255,255,255,.78);padding-block:clamp(3rem,6vw,4.4rem);text-align:center}
+  .cta h2{color:#fff;font-family:var(--serif);font-weight:400;font-size:clamp(1.8rem,3.6vw,2.6rem)}
+  .cta p{max-width:48ch;margin:1rem auto 0;font-size:1rem;color:rgba(255,255,255,.66)}
+  .cta .row{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+  .cta .btn-ghost{border-color:rgba(255,255,255,.28);color:#fff}
+  .cta .btn-ghost:hover{border-color:var(--accent-2);color:var(--accent-2)}
+
+  /* ---- footer ---- */
+  footer.foot{border-top:1px solid var(--line);background:var(--bg-2);padding-block:3.5rem 2rem}
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:2rem}
+  .foot .logo-img{height:27px;margin-bottom:.55rem}
+  .foot .tag{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:.6rem}
+  .foot .desc{font-size:.85rem;color:var(--muted);margin-top:1rem;max-width:34ch}
+  .foot .col h5{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
+  .foot .col a{display:block;font-size:.88rem;color:var(--muted);padding:.32rem 0;transition:.15s}
+  .foot .col a:hover{color:var(--accent)}
+  .foot-btm{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-top:2.8rem;padding-top:1.6rem;border-top:1px solid var(--line);font-size:.8rem;color:var(--faint)}
+
+  /* ---- fullscreen ---- */
+  .stage-band:fullscreen{display:grid;place-content:center;padding:1.5rem;width:100%;height:100%}
+  .stage-band:fullscreen .stage-in{width:min(96vw,calc(94vh * 16 / 9))}
+  .stage-band:fullscreen .rail,.stage-band:fullscreen .hint{display:none}
+
+  @media (max-width:900px){
+    .navlinks,.nav-cta{display:none}
+    .navtoggle{display:block}
+    .mobile-menu.open{display:flex}
+    .foot-grid{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:760px){
+    .deck-head .row{align-items:flex-start}
+    .arrow{width:38px;height:38px}
+    .arrow.prev{left:.5rem}.arrow.next{right:.5rem}
+    .bar .title{display:none}
+    .rail button{width:88px}
+    .hint{display:none}
+    .foot-grid{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- nav -->
+<header class="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand" aria-label="Node AI home"><img class="logo-img" src="/logo.png" alt="Node AI" /></a>
+    <nav class="navlinks">
+      <a href="/#how">How it works</a>
+      <a href="/#why">Why Node</a>
+      <a href="/brands.html">For brands</a>
+      <a href="/nodes.html">For nodes</a>
+      <a href="/#proof">Why we win</a>
+    </nav>
+    <a href="/#contact" class="btn btn-primary nav-cta">Get a demo</a>
+    <button class="navtoggle" id="navtoggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobilemenu">
+    <a href="/#how">How it works</a>
+    <a href="/#why">Why Node</a>
+    <a href="/brands.html">For brands</a>
+    <a href="/nodes.html">For nodes</a>
+    <a href="/#proof">Why we win</a>
+    <a href="/#contact" class="btn btn-primary">Get a demo</a>
+  </div>
+</header>
+
+<!-- ============ HEADER ============ -->
+<div class="deck-head">
+  <div class="wrap">
+    <div class="row">
+      <div>
+        <span class="kicker">Seed 2026 · NYC + North Jersey</span>
+        <h1>Investor deck</h1>
+        <p class="sub">Same-day delivery at the price of ground, fulfilled out of businesses that are
+          already open and already staffed. Twenty-one slides, including the appendix behind the numbers.</p>
+      </div>
+      <div class="deck-actions">
+        <a class="btn btn-primary" href="/deck/NodeAI-Seed-Deck.pdf" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download PDF
+        </a>
+        <a class="btn btn-ghost" href="mailto:elorkg@gmail.com?subject=Node%20AI%20—%20Seed%20round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+          Talk to Elor
+        </a>
+      </div>
+    </div>
+    <span class="confid">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Private &amp; confidential — shared by link, not for redistribution.
+    </span>
+  </div>
+</div>
+
+<!-- ============ STAGE ============ -->
+<section class="stage-band" id="band">
+  <div class="wrap stage-in">
+
+    <div class="stage" id="stage">
+      <div class="prog" id="prog" style="width:0"></div>
+      <div class="spinner"><i></i></div>
+      <button class="arrow prev" id="prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="arrow next" id="next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <div class="bar">
+      <span class="count" id="count">01<em>&thinsp;/&thinsp;21</em></span>
+      <span class="title" id="title" aria-live="polite"></span>
+      <span class="tools">
+        <button class="tool" id="gridbtn" aria-label="All slides" title="All slides (G)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+        <button class="tool" id="fsbtn" aria-label="Fullscreen" title="Fullscreen (F)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m8 0h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+      </span>
+    </div>
+
+    <div class="rail" id="rail" role="tablist" aria-label="Slide thumbnails"></div>
+
+    <div class="hint">
+      <span><kbd>←</kbd><kbd>→</kbd>Navigate</span>
+      <span><kbd>G</kbd>All slides</span>
+      <span><kbd>F</kbd>Fullscreen</span>
+      <span>Click a slide to enlarge it</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Slide, enlarged">
+  <button class="lb-x" id="lbclose" aria-label="Close">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <div class="lb-stage" id="lbstage">
+    <img id="lbimg" alt="" />
+    <button class="arrow prev" id="lbprev" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="arrow next" id="lbnext" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+  <div class="lb-cap" id="lbcap"></div>
+</div>
+
+<!-- ============ GRID OVERLAY ============ -->
+<div class="grid-ov" id="gridov" role="dialog" aria-modal="true" aria-label="All slides">
+  <div class="grid-top">
+    <h4>All slides · 21</h4>
+    <button class="tool" id="gridclose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="grid-cells" id="gridcells"></div>
+</div>
+
+<!-- ============ CONTENTS ============ -->
+<section class="contents">
+  <div class="wrap">
+    <span class="kicker">What's inside</span>
+    <h2>Thirteen slides, then the appendix that shows the work.</h2>
+    <nav class="toc" id="toc" aria-label="Slide contents"></nav>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta">
+  <div class="wrap">
+    <h2>The round is open.</h2>
+    <p>$3.5M seed, 24 months, 20 to 25 live nodes across New York and North Jersey.
+       Happy to walk through the model or the live product.</p>
+    <div class="row">
+      <a class="btn btn-primary" href="mailto:elorkg@gmail.com?subject=Node%20AI%20—%20Seed%20round">Talk to Elor</a>
+      <a class="btn btn-ghost" href="/deck/NodeAI-Seed-Deck.pdf" download>Download the deck</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="logo-img" src="/logo.png" alt="Node AI" />
+        <div class="tag">Distributed Commerce Infrastructure</div>
+        <p class="desc">Same-day delivery on your own store — inventory placed near demand, fulfilled and delivered automatically.</p>
+      </div>
+      <div class="col">
+        <h5>Product</h5>
+        <a href="/#platform">What Node does</a>
+        <a href="/#how">How it works</a>
+        <a href="/#why">Why Node</a>
+        <a href="/#faq">FAQ</a>
+      </div>
+      <div class="col">
+        <h5>Network</h5>
+        <a href="/brands.html">For brands</a>
+        <a href="/nodes.html">For nodes</a>
+        <a href="/#proof">Why we win</a>
+      </div>
+      <div class="col">
+        <h5>Company</h5>
+        <a href="/#proof">About</a>
+        <a href="/#contact">Contact</a>
+        <a href="mailto:elorkg@gmail.com?subject=Node%20AI%20—%20Investor">Investors</a>
+      </div>
+    </div>
+    <div class="foot-btm">
+      <span>© 2026 Node AI. All rights reserved.</span>
+      <span>New York City · Northern New Jersey</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Section label + headline for each slide, in deck order. */
+  var SLIDES = [
+    ["Cover",                  "Same-day delivery at the price of ground. No warehouses."],
+    ["The problem",            "If the package starts 500 miles away, the shipping decision has already been made for you."],
+    ["The insight",            "The delivery is slow because the inventory starts hundreds of miles away."],
+    ["The model",              "A shelf and a scanner inside a business that is already open."],
+    ["Working product",        "The system already works."],
+    ["What came before",       "Darkstore and Ohi built capacity before they knew where demand was."],
+    ["Category demand",        "Independent brands are already buying same-day on their own storefronts."],
+    ["Unit economics",         "A new zone already covers its costs; margin goes from 13% to 32%."],
+    ["Data & the engine",      "The order history is what tells us where to put inventory."],
+    ["Supply & demand",        "Neither side has to change much."],
+    ["Defensibility & market", "The same node gets cheaper as more orders move through it."],
+    ["Team",                   "The idea came out of ten years of running a 3PL."],
+    ["The round",              "We are raising $3.5M."],
+    ["Appendix",               "Detail behind the core deck."],
+    ["A1 · Competitive",       "Darkstore, Ohi and Gently."],
+    ["A2 · Unit economics",    "Assumptions behind the margin bars."],
+    ["A3 · Host economics",    "What a host is paid."],
+    ["A4 · Adoption",          "Early adoption signal."],
+    ["A5 · Expansion",         "The full ladder."],
+    ["A6 · Optionality",       "In-store sale: a retail shelf the brand never had to open."],
+    ["A7 · Metro math",        "How the metro number is built."]
+  ];
+  var N = SLIDES.length;
+
+  var pad     = function(n){ return (n < 10 ? "0" : "") + n; };
+  var slideSrc= function(n){ return "/deck/slide-" + pad(n) + ".webp"; };
+  var thumbSrc= function(n){ return "/deck/thumb-" + pad(n) + ".webp"; };
+
+  var stage  = document.getElementById("stage");
+  var railEl = document.getElementById("rail");
+  var cells  = document.getElementById("gridcells");
+  var tocEl  = document.getElementById("toc");
+  var prevB  = document.getElementById("prev");
+  var nextB  = document.getElementById("next");
+  var countEl= document.getElementById("count");
+  var titleEl= document.getElementById("title");
+  var progEl = document.getElementById("prog");
+  var gridOv = document.getElementById("gridov");
+
+  /* One <img> per slide, created on demand and kept — so revisiting is instant. */
+  var imgs = {};
+  function ensureImg(n){
+    if(imgs[n]) return imgs[n];
+    var im = document.createElement("img");
+    im.src = slideSrc(n);
+    im.alt = "Slide " + n + " of " + N + " — " + SLIDES[n-1][0] + ": " + SLIDES[n-1][1];
+    im.decoding = "async";
+    stage.appendChild(im);
+    imgs[n] = im;
+    return im;
+  }
+
+  var cur = 0;
+
+  function reveal(n){
+    stage.classList.add("ready");
+    Object.keys(imgs).forEach(function(k){ imgs[k].classList.toggle("on", +k === n); });
+  }
+
+  function show(n, push){
+    n = Math.min(N, Math.max(1, n|0));
+    if(n === cur) return;
+    cur = n;
+
+    /* Hold the previous slide under the spinner until the new one has decoded,
+       rather than flashing an empty stage between them. */
+    var im = ensureImg(n);
+    if(im.complete) reveal(n);
+    else {
+      stage.classList.remove("ready");
+      im.addEventListener("load", function(){ if(cur === n) reveal(n); }, {once:true});
+    }
+
+    /* neighbours, so a click never waits on the network */
+    if(n < N) ensureImg(n + 1);
+    if(n > 1) ensureImg(n - 1);
+
+    countEl.innerHTML = pad(n) + "<em>&thinsp;/&thinsp;" + N + "</em>";
+    titleEl.innerHTML = "<span>" + SLIDES[n-1][0] + "</span><b>" + SLIDES[n-1][1] + "</b>";
+    progEl.style.width = (n / N * 100) + "%";
+    prevB.disabled = (n === 1);
+    nextB.disabled = (n === N);
+
+    [].forEach.call(railEl.children, function(b, i){ b.classList.toggle("on", i + 1 === n); });
+    [].forEach.call(cells.children,  function(b, i){ b.classList.toggle("on", i + 1 === n); });
+
+    /* Centre the rail by setting scrollLeft, not scrollIntoView — the latter
+       also scrolls the page vertically, which yanks the view on a deep link. */
+    var active = railEl.children[n-1];
+    if(active){
+      railEl.scrollTo({
+        left: active.offsetLeft - (railEl.clientWidth - active.offsetWidth) / 2,
+        behavior: "smooth"
+      });
+    }
+
+    if(lb.classList.contains("on")) paintLb();
+
+    if(push !== false && location.hash !== "#" + n){
+      history.replaceState(null, "", "#" + n);
+    }
+  }
+
+  /* ---- build rail, grid and contents ---- */
+  SLIDES.forEach(function(s, i){
+    var n = i + 1, label = s[0] + " — " + s[1];
+
+    var b = document.createElement("button");
+    b.setAttribute("role", "tab");
+    b.setAttribute("aria-label", "Slide " + n + ": " + label);
+    b.innerHTML = '<img src="' + thumbSrc(n) + '" alt="" loading="lazy" /><i>' + pad(n) + "</i>";
+    b.addEventListener("click", function(){ show(n); });
+    railEl.appendChild(b);
+
+    var c = document.createElement("button");
+    c.innerHTML = '<img src="' + thumbSrc(n) + '" alt="" loading="lazy" />' +
+                  '<span class="cap"><i>' + pad(n) + " · " + s[0] + "</i><b>" + s[1] + "</b></span>";
+    c.addEventListener("click", function(){ closeGrid(); show(n); });
+    cells.appendChild(c);
+
+    var a = document.createElement("a");
+    a.href = "#" + n;
+    a.innerHTML = '<span class="n">' + pad(n) + '</span><span class="t">' + s[1] + "</span>";
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      show(n);
+      document.getElementById("band").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    tocEl.appendChild(a);
+  });
+
+  /* ---- controls ---- */
+  prevB.addEventListener("click", function(){ show(cur - 1); });
+  nextB.addEventListener("click", function(){ show(cur + 1); });
+
+  function openGrid(){  gridOv.classList.add("on");    document.body.style.overflow = "hidden"; }
+  function closeGrid(){ gridOv.classList.remove("on"); document.body.style.overflow = ""; }
+  document.getElementById("gridbtn").addEventListener("click", openGrid);
+  document.getElementById("gridclose").addEventListener("click", closeGrid);
+  gridOv.addEventListener("click", function(e){ if(e.target === gridOv) closeGrid(); });
+
+  /* ---- lightbox ---- */
+  var lb      = document.getElementById("lb");
+  var lbImg   = document.getElementById("lbimg");
+  var lbCap   = document.getElementById("lbcap");
+  var lbStage = document.getElementById("lbstage");
+  var turned  = window.matchMedia("(orientation:portrait) and (max-width:820px)");
+
+  function paintLb(){
+    lbImg.src = slideSrc(cur);
+    lbImg.alt = imgs[cur] ? imgs[cur].alt : "";
+    lbCap.innerHTML = pad(cur) + " / " + N +
+      '<span class="lb-turn"> &middot; turn your phone for an upright view</span>';
+    document.getElementById("lbprev").disabled = (cur === 1);
+    document.getElementById("lbnext").disabled = (cur === N);
+  }
+  function openLb(){  paintLb(); lb.classList.add("on");    document.body.style.overflow = "hidden"; }
+  function closeLb(){ lb.classList.remove("on");            document.body.style.overflow = ""; }
+
+  document.getElementById("lbclose").addEventListener("click", closeLb);
+  document.getElementById("lbprev").addEventListener("click", function(){ show(cur - 1); });
+  document.getElementById("lbnext").addEventListener("click", function(){ show(cur + 1); });
+  lb.addEventListener("click", function(e){ if(e.target === lb || e.target === lbStage) closeLb(); });
+
+  /* Tapping the slide enlarges it — the only obvious gesture on a phone. */
+  stage.addEventListener("click", function(e){
+    if(swiped || e.target.closest(".arrow")) return;
+    openLb();
+  });
+
+  var band  = document.getElementById("band");
+  var fsbtn = document.getElementById("fsbtn");
+  var canFs = !!band.requestFullscreen;
+  fsbtn.addEventListener("click", function(){
+    if(!canFs){ lb.classList.contains("on") ? closeLb() : openLb(); return; }
+    if(document.fullscreenElement) document.exitFullscreen();
+    else band.requestFullscreen();
+  });
+  document.addEventListener("fullscreenchange", function(){
+    fsbtn.classList.toggle("on", !!document.fullscreenElement);
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if(k === "Escape" && gridOv.classList.contains("on")){ closeGrid(); return; }
+    if(k === "Escape" && lb.classList.contains("on")){ closeLb(); return; }
+    if(k === "ArrowRight" || k === "PageDown"){ e.preventDefault(); show(cur + 1); }
+    else if(k === "ArrowLeft" || k === "PageUp"){ e.preventDefault(); show(cur - 1); }
+    else if(k === "Home"){ e.preventDefault(); show(1); }
+    else if(k === "End"){ e.preventDefault(); show(N); }
+    else if(k === "g" || k === "G"){ gridOv.classList.contains("on") ? closeGrid() : openGrid(); }
+    else if(k === "f" || k === "F"){ fsbtn.click(); }
+  });
+
+  /* ---- swipe ----
+     In the lightbox's turned view the slide's "right" points down the screen,
+     so a swipe up is what advances it. Everywhere else it is a normal
+     horizontal swipe. */
+  var swiped = false;
+  function swipeable(el, rotates){
+    var x0 = null, y0 = null;
+    el.addEventListener("touchstart", function(e){
+      x0 = e.changedTouches[0].clientX; y0 = e.changedTouches[0].clientY;
+    }, {passive:true});
+    el.addEventListener("touchend", function(e){
+      if(x0 === null) return;
+      var dx = e.changedTouches[0].clientX - x0,
+          dy = e.changedTouches[0].clientY - y0,
+          along = (rotates && turned.matches) ? dy : dx;
+      if(Math.abs(along) > 45 && Math.abs(along) > Math.abs((rotates && turned.matches) ? dx : dy)){
+        swiped = true;
+        setTimeout(function(){ swiped = false; }, 400);
+        show(cur + (along < 0 ? 1 : -1));
+      }
+      x0 = y0 = null;
+    }, {passive:true});
+  }
+  swipeable(stage, false);
+  swipeable(lbStage, true);
+
+  window.addEventListener("hashchange", function(){
+    var n = parseInt(location.hash.slice(1), 10);
+    if(n >= 1 && n <= N) show(n, false);
+  });
+
+  /* mobile menu */
+  var tog = document.getElementById("navtoggle"), menu = document.getElementById("mobilemenu");
+  tog.addEventListener("click", function(){
+    var open = menu.classList.toggle("open");
+    tog.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  var start = parseInt(location.hash.slice(1), 10);
+  show(start >= 1 && start <= N ? start : 1, false);
+})();
+</script>
+</body>
+</html>

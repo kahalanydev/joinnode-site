@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# The seed deck is shared by link with investors, not published to search.
+Disallow: /investor-deck
+Disallow: /deck/
+
 Sitemap: https://www.joinnode.ai/sitemap.xml
