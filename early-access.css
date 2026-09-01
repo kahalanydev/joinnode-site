@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Node AI — early-access signup module.
+   Shared by index.html, brands.html, nodes.html and the two /early-access
+   landing pages. Everything is prefixed .ea- so it cannot collide with the
+   page styles it is dropped into.
+
+   The design tokens below are FALLBACKS. index/brands/nodes already define
+   :root in their own <style>, and those win by cascade order; the landing
+   pages carry a trimmed base, so the tokens have to survive on their own here.
+   ========================================================================== */
+
+:root{
+  --ea-accent:#0FA06A; --ea-accent-2:#18B87A; --ea-accent-deep:#0B7F53;
+  --ea-accent-soft:rgba(15,160,106,.13);
+  --ea-ink:#16294A; --ea-ink-2:#3A4A63; --ea-muted:#5E6C82; --ea-faint:#94A1B4;
+  --ea-line:rgba(20,40,74,.12); --ea-line-2:rgba(20,40,74,.20);
+  --ea-panel:#FFFFFF; --ea-panel-2:#F7FAFD; --ea-panel-3:#EDF2F9;
+}
+
+/* ---------- shell ---------- */
+.ea-card{
+  border:1px solid rgba(15,160,106,.3); border-radius:18px;
+  background:linear-gradient(180deg,rgba(15,160,106,.06),var(--ea-panel) 42%);
+  overflow:hidden;
+  box-shadow:0 1px 2px rgba(15,31,60,.05),0 26px 54px -30px rgba(15,31,60,.3);
+}
+.ea-card.ea-narrow{max-width:620px;margin-inline:auto}
+.ea-card.ea-wide{max-width:900px;margin-inline:auto}
+.ea-inner{padding:clamp(1.5rem,3vw,2.2rem)}
+
+.ea-scarce{
+  display:flex; align-items:center; justify-content:center; gap:.7rem; flex-wrap:wrap;
+  font-size:.79rem; font-weight:600; color:var(--ea-accent-deep); text-align:center;
+  background:linear-gradient(90deg,rgba(15,160,106,.16),rgba(15,160,106,.06));
+  border-bottom:1px solid rgba(15,160,106,.2); padding:.6rem 1rem;
+}
+.ea-scarce .ea-sep{color:rgba(15,160,106,.45)}
+.ea-dot{
+  width:8px; height:8px; border-radius:50%; background:var(--ea-accent); flex:none;
+  animation:ea-pulse 2.2s infinite;
+}
+@keyframes ea-pulse{
+  0%{box-shadow:0 0 0 0 rgba(15,160,106,.55)}
+  70%{box-shadow:0 0 0 8px rgba(15,160,106,0)}
+  100%{box-shadow:0 0 0 0 rgba(15,160,106,0)}
+}
+
+.ea-head{text-align:center; margin-bottom:1.4rem}
+.ea-head h2{margin-top:.8rem}
+.ea-head p{font-size:.98rem; color:var(--ea-muted); margin:.75rem auto 0; max-width:52ch}
+
+/* ---------- segmented control (the "two modes") ---------- */
+.ea-seg{
+  display:grid; grid-template-columns:1fr 1fr; gap:.3rem;
+  background:var(--ea-panel-3); border:1px solid var(--ea-line);
+  border-radius:11px; padding:.28rem; margin-bottom:1.2rem;
+}
+.ea-seg button{
+  font:inherit; font-size:.85rem; font-weight:600; color:var(--ea-muted);
+  background:transparent; border:0; border-radius:8px; padding:.55rem .5rem;
+  cursor:pointer; transition:.18s;
+}
+.ea-seg button:hover,.ea-seg button:focus-visible{color:var(--ea-ink); outline:none}
+.ea-seg button.is-on{
+  background:var(--ea-panel); color:var(--ea-ink);
+  box-shadow:0 1px 3px rgba(15,31,60,.12);
+}
+
+/* ---------- fields ---------- */
+.ea-grid{display:grid; gap:.7rem}
+.ea-grid.ea-two{grid-template-columns:1fr 1fr}
+@media(max-width:560px){.ea-grid.ea-two{grid-template-columns:1fr}}
+.ea-field label{
+  display:block; font-size:.71rem; font-weight:700; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ea-faint); margin-bottom:.34rem;
+}
+.ea-field label .ea-req{color:var(--ea-accent)}
+.ea-field input,.ea-field select,.ea-field textarea{
+  width:100%; font:inherit; font-size:.92rem; color:var(--ea-ink);
+  background:var(--ea-panel); border:1px solid var(--ea-line-2);
+  border-radius:9px; padding:.68rem .8rem; transition:.18s;
+}
+.ea-field input::placeholder,.ea-field textarea::placeholder{color:#AEB9C8}
+.ea-field input:hover,.ea-field select:hover,.ea-field textarea:hover{border-color:rgba(20,40,74,.32)}
+.ea-field input:focus,.ea-field select:focus,.ea-field textarea:focus{
+  outline:none; border-color:var(--ea-accent); box-shadow:0 0 0 3px var(--ea-accent-soft);
+}
+.ea-field select{
+  appearance:none; -webkit-appearance:none; cursor:pointer; padding-right:2.1rem;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E6C82' stroke-width='2' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat; background-position:right .65rem center; background-size:16px;
+}
+.ea-field textarea{resize:vertical; min-height:74px}
+
+/* The honeypot. Off-screen rather than display:none — some bots skip hidden
+   inputs but happily fill anything still in the layout. aria-hidden + tabindex
+   keep it away from screen readers and keyboard users. */
+.ea-hp{
+  position:absolute !important; left:-9999px !important; top:auto !important;
+  width:1px !important; height:1px !important; overflow:hidden !important;
+}
+
+/* ---------- submit + states ---------- */
+.ea-submit{width:100%; margin-top:1.05rem; justify-content:center}
+.ea-submit[disabled]{opacity:.65; cursor:progress}
+.ea-micro{font-size:.76rem; color:var(--ea-faint); margin-top:.7rem; text-align:center; line-height:1.5}
+.ea-error{
+  font-size:.84rem; color:#9A2C22; background:rgba(208,70,59,.09);
+  border:1px solid rgba(208,70,59,.3); border-radius:9px;
+  padding:.6rem .8rem; margin-top:.85rem;
+}
+.ea-done{
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:.55rem;
+  padding:1.7rem .6rem; border:1px solid rgba(15,160,106,.32); border-radius:12px;
+  background:linear-gradient(180deg,rgba(15,160,106,.09),transparent);
+}
+.ea-done .ea-tick{
+  width:42px; height:42px; border-radius:50%; background:var(--ea-accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  animation:ea-pop .5s cubic-bezier(.2,1.5,.4,1) both;
+}
+.ea-done .ea-tick svg{width:22px; height:22px}
+.ea-done h4{font-family:var(--serif,Georgia,serif); font-weight:400; font-size:1.2rem; color:var(--ea-ink)}
+.ea-done p{font-size:.87rem; color:var(--ea-muted); max-width:36ch}
+@keyframes ea-pop{from{transform:scale(.4); opacity:0} to{transform:scale(1); opacity:1}}
+
+.ea-noscript{
+  font-size:.86rem; color:var(--ea-muted); text-align:center;
+  border:1px dashed var(--ea-line-2); border-radius:9px; padding:.8rem 1rem; margin-top:1rem;
+}
+.ea-noscript a{color:var(--ea-accent); font-weight:600}
+
+@media(prefers-reduced-motion:reduce){
+  .ea-dot,.ea-done .ea-tick{animation:none}
+}
