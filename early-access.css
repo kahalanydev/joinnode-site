@@ -18,6 +18,9 @@
 }
 
 /* ---------- shell ---------- */
+/* Anchored from the announcement bar / nav, so clear the 66px sticky header. */
+#early-access{scroll-margin-top:86px}
+
 .ea-card{
   border:1px solid rgba(15,160,106,.3); border-radius:18px;
   background:linear-gradient(180deg,rgba(15,160,106,.06),var(--ea-panel) 42%);
