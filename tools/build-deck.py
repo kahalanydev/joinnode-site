@@ -19,11 +19,11 @@ source PDF before anything is rendered, so the download and the slides agree:
   DELETIONS   Sentences pointing at something the deck no longer contains.
   LISTS       Lists that outlived some of their entries.
 
-REDACTIONS and CORRECTIONS are empty as of deck v2, which cut the slide carrying
-the client name and fixed the contact address at source. The machinery stays
-because the next export can reintroduce either. DELETIONS and LISTS are in use:
-v2 cut appendices A4 and A7 without updating the appendix contents slide or the
-line on slide 10 that pointed at A4.
+All four fixer tables are empty as of deck v3 (Sept 2026, 16 pages) — it names no
+client brand, states no fact we know to be wrong, and has no appendix contents
+slide left to go stale. FORBIDDEN still runs on every build. The machinery stays
+because the next export can reintroduce any of it; see each table for what it
+last caught.
 
 None of this shows in a diff: the repo holds only binaries. Drop a fresh export
 in by hand and whatever the passes were catching goes straight back up on a
@@ -76,28 +76,28 @@ CORRECTIONS = [
 
 # Sentences left pointing at something the deck no longer contains. Cleared, not
 # rewritten — a dead pointer should go away, not be replaced with a new claim.
+#
+# Empty since v3, but NOT because v3 is clean: it cut the whole appendix and slides
+# 10 and 11 still footnote "SOURCES IN A1" and "ASSUMPTIONS IN A2". Those are left
+# standing deliberately — a whole missing appendix reads more like an incomplete
+# export than a deliberate cut, and Elor has been asked which it is. If he confirms
+# the appendix is gone for good, add both here rather than editing the source.
 DELETIONS = [
-    {
-        "find": "Early capture rates are in the appendix.",
-        "why": "those were the 8-30% / 40-66% figures on A4, and A4 was cut in v2",
-    },
+    # {"find": "SOURCES IN A1",      "why": "v3 cut the appendix"},   # slide 10
+    # {"find": "ASSUMPTIONS IN A2",  "why": "v3 cut the appendix"},   # slide 11
 ]
 
 # Lists that outlived some of their entries. Give the whole list as it stands and
 # as it should read; the surviving items are re-placed into the leading slots so
-# no hole is left where a cut one was.
+# no hole is left where a cut one was. Empty since v3, which has no appendix
+# contents slide left to go stale.
 LISTS = [
-    {
-        "page": 14,
-        "was": ["A1 · COMPETITIVE DETAIL", "A2 · UNIT ECONOMICS ASSUMPTIONS",
-                "A3 · HOST ECONOMICS", "A4 · ADOPTION DETAIL",
-                "A5 · EXPANSION MODEL", "A6 · FUTURE OPTIONALITY",
-                "A7 · METRO MATH"],
-        "now": ["A1 · COMPETITIVE DETAIL", "A2 · UNIT ECONOMICS ASSUMPTIONS",
-                "A3 · HOST ECONOMICS", "A5 · EXPANSION MODEL",
-                "A6 · FUTURE OPTIONALITY"],
-        "why": "the appendix contents still promised A4 and A7 after v2 cut them",
-    },
+    # v2 slide 14 was the appendix contents, and still promised A4 and A7 after
+    # they were cut:
+    # {"page": 14,
+    #  "was": ["A1 · COMPETITIVE DETAIL", ..., "A7 · METRO MATH"],
+    #  "now": ["A1 · COMPETITIVE DETAIL", ..., "A6 · FUTURE OPTIONALITY"],
+    #  "why": "..."},
 ]
 
 # Sampled off the appendix page background and the body ink, so the patch is

@@ -141,7 +141,7 @@
 
   /* ---- lightbox ----
      iOS Safari has no Fullscreen API for elements, and a 16:9 slide inside a
-     portrait phone is ~200px tall — unreadable for the appendix. So the
+     portrait phone is ~200px tall — unreadable for the dense table slides. So the
      fullscreen control falls back to this, and in portrait the slide is turned
      90° to use the long edge of the screen. Physically rotating the phone trips
      the media query and it lands upright again. */
@@ -276,7 +276,8 @@
         <span class="kicker">Seed 2026 · NYC + North Jersey</span>
         <h1>Investor deck</h1>
         <p class="sub">Same-day delivery at the price of ground, fulfilled out of businesses that are
-          already open and already staffed. Nineteen slides, including the appendix behind the numbers.</p>
+          already open and already staffed. Sixteen slides: the problem, the live product, the
+          economics and the round.</p>
       </div>
       <div class="deck-actions">
         <a class="btn btn-primary" href="/deck/NodeAI-Seed-Deck.pdf" download>
@@ -368,7 +369,7 @@
 <section class="contents">
   <div class="wrap">
     <span class="kicker">What's inside</span>
-    <h2>Thirteen slides, then the appendix that shows the work.</h2>
+    <h2>Sixteen slides, from the problem to the round.</h2>
     <nav class="toc" id="toc" aria-label="Slide contents"></nav>
   </div>
 </section>
@@ -428,25 +429,22 @@
 
   /* Section label + headline for each slide, in deck order. */
   var SLIDES = [
-    ["Cover",                  "Same-day delivery at the price of ground. No warehouses."],
-    ["The problem",            "If the package starts 500 miles away, the shipping decision has already been made for you."],
-    ["The insight",            "The delivery is slow because the inventory starts hundreds of miles away."],
-    ["The model",              "A shelf and a scanner inside a business that is already open."],
-    ["Working product",        "The system already works."],
-    ["What came before",       "Darkstore and Ohi built capacity before they knew where demand was."],
-    ["Category demand",        "Independent brands are already buying same-day on their own storefronts."],
-    ["Unit economics",         "A new zone already covers its costs; margin goes from 13% to 32%."],
-    ["Data & the engine",      "The order history is what tells us where to put inventory."],
-    ["Supply & demand",        "Neither side has to change much."],
-    ["Defensibility & market", "The same node gets cheaper as more orders move through it."],
-    ["Team",                   "The idea came out of ten years of running a 3PL."],
-    ["The round",              "We are raising $3.5M."],
-    ["Appendix",               "Detail behind the core deck."],
-    ["A1 · Competitive",       "Darkstore, Ohi and Gently."],
-    ["A2 · Unit economics",    "Assumptions behind the margin bars."],
-    ["A3 · Host economics",    "What a host is paid."],
-    ["A5 · Expansion",         "The full ladder."],
-    ["A6 · Optionality",       "In-store sale: a retail shelf the brand never had to open."]
+    ["Cover",             "Same-day delivery at the price of ground. No warehouses."],
+    ["The problem",       "If the package starts 500 miles away, same-day is either impossible or very expensive."],
+    ["The insight",       "The legacy model spends four handoffs and 500 miles getting back to the customer."],
+    ["The model",         "A shelf and a scanner inside a local business that is already open."],
+    ["Working product",   "Node turns a hundreds-of-miles fulfillment problem into a one-mile delivery."],
+    ["The Shopify app",   "The customer-facing product is built, live and integrated."],
+    ["The learning loop", "Every order makes the network smarter."],
+    ["Supply & demand",   "Neither side has to change much."],
+    ["What came before",  "Ohi and Darkstore ran similar ideas and failed on structural differences."],
+    ["Category demand",   "Independent brands are already buying same-day on their own storefronts."],
+    ["Unit economics",    "Contribution positive from the first order."],
+    ["The ladder",        "A mature NYC network has a Node within one mile of every order."],
+    ["The blueprint",     "Prove New York. Replicate the network."],
+    ["Team",              "Logistics. Software. Distribution."],
+    ["The round",         "We are raising $3.5M."],
+    ["End",               "Closing slide."]
   ];
   var N = SLIDES.length;
   document.getElementById("gridcount").textContent = "All slides · " + N;
