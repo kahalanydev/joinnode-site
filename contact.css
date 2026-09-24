@@ -1,0 +1,73 @@
+/* ==========================================================================
+   Node AI — email contact panel (contact.js).
+   Loaded by index, brands, nodes and investor-deck. Everything is prefixed
+   .ct- so it cannot collide with the page styles it is dropped into; the
+   tokens mirror the site palette and are declared here so the panel does not
+   depend on any one page's :root.
+   ========================================================================== */
+
+:root{
+  --ct-accent:#0FA06A; --ct-accent-2:#18B87A; --ct-accent-deep:#0B7F53;
+  --ct-accent-soft:rgba(15,160,106,.10);
+  --ct-ink:#16294A; --ct-ink-2:#3A4A63; --ct-muted:#5E6C82;
+  --ct-line:rgba(20,40,74,.12); --ct-line-2:rgba(20,40,74,.20);
+  --ct-panel:#FFFFFF; --ct-panel-2:#F7FAFD;
+}
+
+.ct{
+  margin:auto; padding:0; border:1px solid var(--ct-line); border-radius:16px;
+  width:min(440px, calc(100vw - 2rem));
+  background:var(--ct-panel); color:var(--ct-ink-2); font:inherit; line-height:1.5;
+  box-shadow:0 1px 2px rgba(15,31,60,.06), 0 30px 70px -28px rgba(15,31,60,.5);
+}
+.ct[open]{animation:ct-in .18s ease-out}
+.ct::backdrop{background:rgba(12,20,33,.45); backdrop-filter:blur(3px)}
+@keyframes ct-in{from{opacity:0; transform:translateY(8px) scale(.98)}}
+
+.ct-in{position:relative; padding:1.45rem 1.5rem 1.5rem}
+.ct svg{width:15px; height:15px; flex:none}
+
+.ct-kick{
+  margin:0; font-size:.72rem; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ct-accent);
+}
+
+.ct-close{
+  position:absolute; top:.75rem; right:.75rem; width:34px; height:34px; border:0; border-radius:8px;
+  background:none; color:var(--ct-muted); cursor:pointer; display:grid; place-items:center;
+}
+.ct-close svg{width:18px; height:18px}
+.ct-close:hover, .ct-close:active, .ct-close:focus-visible{background:var(--ct-panel-2); color:var(--ct-ink)}
+
+.ct-row{
+  display:flex; align-items:center; gap:.6rem; margin-top:.75rem;
+  padding:.5rem .5rem .5rem .95rem; border:1px solid var(--ct-line-2); border-radius:11px;
+  background:var(--ct-panel-2);
+}
+.ct-addr{
+  flex:1; min-width:0; margin:0; font-size:1.06rem; font-weight:600; color:var(--ct-ink);
+  overflow-wrap:anywhere; user-select:all;
+}
+.ct-copy{
+  flex:none; display:inline-flex; align-items:center; gap:.4rem; min-width:6.4rem; justify-content:center;
+  padding:.55rem .9rem; border:0; border-radius:8px; cursor:pointer;
+  background:var(--ct-accent); color:#fff; font:inherit; font-size:.84rem; font-weight:600;
+  transition:background .16s;
+}
+.ct-copy:hover, .ct-copy:active, .ct-copy:focus-visible{background:var(--ct-accent-2)}
+.ct-copy.done{background:var(--ct-accent-deep)}
+
+.ct-subj{margin:.55rem 0 0; font-size:.82rem; color:var(--ct-muted)}
+.ct-subj b{font-weight:600; color:var(--ct-ink-2)}
+
+.ct-label{margin:1.3rem 0 0; font-size:.78rem; font-weight:600; color:var(--ct-muted)}
+.ct-opts{display:grid; grid-template-columns:repeat(3, 1fr); gap:.5rem; margin-top:.5rem}
+.ct-opt{
+  display:flex; align-items:center; justify-content:center; gap:.4rem;
+  padding:.62rem .5rem; border:1px solid var(--ct-line-2); border-radius:9px;
+  font-size:.86rem; font-weight:600; color:var(--ct-ink); text-decoration:none; white-space:nowrap;
+  transition:border-color .16s, color .16s, background .16s;
+}
+.ct-opt:hover, .ct-opt:active, .ct-opt:focus-visible{
+  border-color:var(--ct-accent); color:var(--ct-accent-deep); background:var(--ct-accent-soft);
+}
